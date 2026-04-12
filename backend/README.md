@@ -42,7 +42,7 @@ Edit `src/main/resources/application.properties`:
 ```properties
 spring.datasource.url=jdbc:mysql://localhost:3306/reclamations_db
 spring.datasource.username=root
-spring.datasource.password=root
+spring.datasource.password=
 ```
 
 **Note:** Tables will be auto-created on first run (ddl-auto=create-drop)
