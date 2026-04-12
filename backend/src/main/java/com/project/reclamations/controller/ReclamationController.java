@@ -6,8 +6,14 @@ import com.project.reclamations.dto.request.SuiviReclamationRequestDTO;
 import com.project.reclamations.dto.request.UpdateStatutRequestDTO;
 import com.project.reclamations.dto.response.ReclamationResponseDTO;
 import com.project.reclamations.dto.response.SuiviReclamationResponseDTO;
+import com.project.reclamations.exception.ApiErrorResponse;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import com.project.reclamations.service.ReclamationService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -33,24 +39,50 @@ public class ReclamationController {
 
     @GetMapping
     @Operation(summary = "Lister toutes les reclamations")
+        @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Liste des reclamations",
+                content = @Content(array = @ArraySchema(schema = @Schema(implementation = ReclamationResponseDTO.class)))),
+            @ApiResponse(responseCode = "500", description = "Erreur interne",
+                content = @Content(schema = @Schema(implementation = ApiErrorResponse.class)))
+        })
     public ResponseEntity<List<ReclamationResponseDTO>> getAllReclamations() {
         return ResponseEntity.ok(reclamationService.getAllReclamations());
     }
 
     @GetMapping("/{id}")
     @Operation(summary = "Recuperer une reclamation par son identifiant")
+        @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Reclamation trouvee",
+                content = @Content(schema = @Schema(implementation = ReclamationResponseDTO.class))),
+            @ApiResponse(responseCode = "404", description = "Reclamation introuvable",
+                content = @Content(schema = @Schema(implementation = ApiErrorResponse.class)))
+        })
     public ResponseEntity<ReclamationResponseDTO> getReclamationById(@PathVariable Long id) {
         return ResponseEntity.ok(reclamationService.getReclamationById(id));
     }
 
     @PostMapping
     @Operation(summary = "Creer une reclamation")
+        @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Reclamation creee",
+                content = @Content(schema = @Schema(implementation = ReclamationResponseDTO.class))),
+            @ApiResponse(responseCode = "400", description = "Donnees invalides",
+                content = @Content(schema = @Schema(implementation = ApiErrorResponse.class)))
+        })
     public ResponseEntity<ReclamationResponseDTO> createReclamation(@Valid @RequestBody ReclamationRequestDTO requestDTO) {
         return ResponseEntity.status(HttpStatus.CREATED).body(reclamationService.createReclamation(requestDTO));
     }
 
     @PutMapping("/{id}/assign")
     @Operation(summary = "Assigner un agent a une reclamation")
+        @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Agent assigne",
+                content = @Content(schema = @Schema(implementation = ReclamationResponseDTO.class))),
+            @ApiResponse(responseCode = "400", description = "Requete invalide",
+                content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))),
+            @ApiResponse(responseCode = "404", description = "Ressource introuvable",
+                content = @Content(schema = @Schema(implementation = ApiErrorResponse.class)))
+        })
     public ResponseEntity<ReclamationResponseDTO> assignAgent(
             @PathVariable Long id,
             @Valid @RequestBody AssignAgentRequestDTO requestDTO
@@ -60,6 +92,14 @@ public class ReclamationController {
 
     @PutMapping("/{id}/statut")
     @Operation(summary = "Mettre a jour le statut d'une reclamation")
+        @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Statut mis a jour",
+                content = @Content(schema = @Schema(implementation = ReclamationResponseDTO.class))),
+            @ApiResponse(responseCode = "400", description = "Requete invalide",
+                content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))),
+            @ApiResponse(responseCode = "404", description = "Reclamation introuvable",
+                content = @Content(schema = @Schema(implementation = ApiErrorResponse.class)))
+        })
     public ResponseEntity<ReclamationResponseDTO> updateStatut(
             @PathVariable Long id,
             @Valid @RequestBody UpdateStatutRequestDTO requestDTO
@@ -69,12 +109,26 @@ public class ReclamationController {
 
     @GetMapping("/{id}/suivi")
     @Operation(summary = "Recuperer le suivi d'une reclamation")
+        @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Historique de suivi",
+                content = @Content(array = @ArraySchema(schema = @Schema(implementation = SuiviReclamationResponseDTO.class)))),
+            @ApiResponse(responseCode = "404", description = "Reclamation introuvable",
+                content = @Content(schema = @Schema(implementation = ApiErrorResponse.class)))
+        })
     public ResponseEntity<List<SuiviReclamationResponseDTO>> getSuivisByReclamation(@PathVariable Long id) {
         return ResponseEntity.ok(reclamationService.getSuivisByReclamation(id));
     }
 
     @PostMapping("/{id}/suivi")
     @Operation(summary = "Ajouter une entree de suivi a une reclamation")
+        @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Suivi ajoute",
+                content = @Content(schema = @Schema(implementation = SuiviReclamationResponseDTO.class))),
+            @ApiResponse(responseCode = "400", description = "Requete invalide",
+                content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))),
+            @ApiResponse(responseCode = "404", description = "Ressource introuvable",
+                content = @Content(schema = @Schema(implementation = ApiErrorResponse.class)))
+        })
     public ResponseEntity<SuiviReclamationResponseDTO> addSuivi(
             @PathVariable Long id,
             @Valid @RequestBody SuiviReclamationRequestDTO requestDTO
@@ -84,6 +138,11 @@ public class ReclamationController {
 
     @GetMapping("/rapport")
     @Operation(summary = "Generer le rapport de satisfaction")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Rapport genere"),
+            @ApiResponse(responseCode = "500", description = "Erreur interne",
+                    content = @Content(schema = @Schema(implementation = ApiErrorResponse.class)))
+    })
     public ResponseEntity<Map<String, Object>> getRapport() {
         return ResponseEntity.ok(reclamationService.getRapportSatisfaction());
     }
