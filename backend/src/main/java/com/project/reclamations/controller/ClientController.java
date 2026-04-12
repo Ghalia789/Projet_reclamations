@@ -2,8 +2,14 @@ package com.project.reclamations.controller;
 
 import com.project.reclamations.dto.request.ClientRequestDTO;
 import com.project.reclamations.dto.response.ClientResponseDTO;
+import com.project.reclamations.exception.ApiErrorResponse;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import com.project.reclamations.service.ClientService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -27,18 +33,36 @@ public class ClientController {
 
     @GetMapping
     @Operation(summary = "Lister tous les clients")
+        @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Liste des clients",
+                content = @Content(array = @ArraySchema(schema = @Schema(implementation = ClientResponseDTO.class)))),
+            @ApiResponse(responseCode = "500", description = "Erreur interne",
+                content = @Content(schema = @Schema(implementation = ApiErrorResponse.class)))
+        })
     public ResponseEntity<List<ClientResponseDTO>> getAllClients() {
         return ResponseEntity.ok(clientService.getAllClients());
     }
 
     @GetMapping("/{id}")
     @Operation(summary = "Recuperer un client par son identifiant")
+        @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Client trouve",
+                content = @Content(schema = @Schema(implementation = ClientResponseDTO.class))),
+            @ApiResponse(responseCode = "404", description = "Client introuvable",
+                content = @Content(schema = @Schema(implementation = ApiErrorResponse.class)))
+        })
     public ResponseEntity<ClientResponseDTO> getClientById(@PathVariable Long id) {
         return ResponseEntity.ok(clientService.getClientById(id));
     }
 
     @PostMapping
     @Operation(summary = "Creer un client")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Client cree",
+                    content = @Content(schema = @Schema(implementation = ClientResponseDTO.class))),
+            @ApiResponse(responseCode = "400", description = "Donnees invalides",
+                    content = @Content(schema = @Schema(implementation = ApiErrorResponse.class)))
+    })
     public ResponseEntity<ClientResponseDTO> createClient(@Valid @RequestBody ClientRequestDTO requestDTO) {
         return ResponseEntity.status(HttpStatus.CREATED).body(clientService.createClient(requestDTO));
     }
