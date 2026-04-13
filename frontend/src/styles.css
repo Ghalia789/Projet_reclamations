@@ -1,37 +1,72 @@
-:root {
-  color-scheme: light;
-  --bg: #f5f7fb;
-  --surface: #ffffff;
-  --surface-alt: #eef2ff;
-  --text: #0f172a;
-  --muted: #475569;
-  --primary: #0f766e;
-  --primary-strong: #115e59;
-  --accent: #f97316;
-  --border: #dbe4f0;
-  --shadow: 0 20px 45px rgba(15, 23, 42, 0.08);
-  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  .nav-pill {
+    @apply inline-flex items-center gap-2 rounded-full border border-transparent px-4 py-2 text-sm font-medium text-slate-500 transition-all duration-200;
+  }
+
+  .nav-pill:hover,
+  .nav-pill.active {
+    @apply text-slate-800;
+  }
+
+  .nav-pill:hover {
+    @apply bg-slate-100;
+  }
+
+  .nav-pill.active {
+    @apply bg-brand-600 text-white shadow-md;
+  }
+
+  .logout-pill {
+    @apply ml-1 inline-flex items-center gap-2 rounded-full bg-gradient-to-br from-accent-500 to-amber-500 px-4 py-2 text-sm font-medium text-white shadow-accent transition-opacity duration-200;
+  }
+
+  .logout-pill:hover {
+    @apply opacity-90;
+  }
 }
 
-html, body {
-  height: 100%;
-  margin: 0;
-  background:
-    radial-gradient(circle at top left, rgba(15, 118, 110, 0.10), transparent 26%),
-    radial-gradient(circle at top right, rgba(249, 115, 22, 0.12), transparent 24%),
-    var(--bg);
-  color: var(--text);
-}
+@layer base {
+  :root {
+    color-scheme: light;
+    --bg: #f5f7fb;
+    --surface: #ffffff;
+    --surface-alt: #eef2ff;
+    --text: #0f172a;
+    --muted: #475569;
+    --primary: #0f766e;
+    --primary-strong: #115e59;
+    --accent: #f97316;
+    --border: #dbe4f0;
+  }
 
-* {
-  box-sizing: border-box;
-}
+  html, body {
+    height: 100%;
+  }
 
-a {
-  color: inherit;
-  text-decoration: none;
-}
+  body {
+    margin: 0;
+    background:
+      radial-gradient(circle at top left, rgba(15, 118, 110, 0.10), transparent 26%),
+      radial-gradient(circle at top right, rgba(249, 115, 22, 0.12), transparent 24%),
+      var(--bg);
+    color: var(--text);
+    font-family: "Space Grotesk", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  }
 
-button, input, textarea, select {
-  font: inherit;
+  * {
+    box-sizing: border-box;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  button, input, textarea, select {
+    font: inherit;
+  }
 }
