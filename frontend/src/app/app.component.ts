@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { NgIf } from '@angular/common';
-import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { AuthService } from './core/services/auth.service';
 
 @Component({
@@ -21,6 +21,7 @@ import { AuthService } from './core/services/auth.service';
           <a routerLink="/agents" routerLinkActive="active">Agents</a>
           <a routerLink="/reclamations" routerLinkActive="active">Réclamations</a>
           <a routerLink="/login" routerLinkActive="active" *ngIf="!authService.isAuthenticated()">Login</a>
+          <button class="logout" type="button" *ngIf="authService.isAuthenticated()" (click)="logout()">Logout</button>
         </nav>
       </header>
 
@@ -84,6 +85,20 @@ import { AuthService } from './core/services/auth.service';
       background: var(--surface-alt);
     }
 
+    .logout {
+      padding: 10px 14px;
+      border-radius: 999px;
+      color: #fff;
+      background: var(--primary);
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .logout:hover {
+      background: var(--primary-strong);
+    }
+
     .content {
       padding: 24px;
       background: rgba(255, 255, 255, 0.72);
@@ -102,5 +117,10 @@ import { AuthService } from './core/services/auth.service';
   `]
 })
 export class AppComponent {
-  constructor(public authService: AuthService) {}
+  constructor(public authService: AuthService, private readonly router: Router) {}
+
+  logout(): void {
+    this.authService.logout();
+    this.router.navigate(['/login']);
+  }
 }
