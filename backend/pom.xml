@@ -11,7 +11,7 @@
     <packaging>jar</packaging>
 
     <name>Système de Gestion des Réclamations</name>
-    <description>Customer Complaint Management System - Spring Boot 4 + Angular</description>
+    <description>Customer Complaint Management System - Spring Boot 3 + Angular</description>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -22,6 +22,7 @@
 
     <properties>
         <java.version>17</java.version>
+        <maven.compiler.release>${java.version}</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <springdoc.version>2.1.0</springdoc.version>
     </properties>
@@ -130,9 +131,30 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.11.0</version>
                 <configuration>
-                    <source>17</source>
-                    <target>17</target>
+                    <release>${maven.compiler.release}</release>
                 </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <version>3.4.1</version>
+                <executions>
+                    <execution>
+                        <id>enforce-java</id>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <requireJavaVersion>
+                                    <version>[17,18)</version>
+                                    <message>Build requires Java 17. Please switch JAVA_HOME/JDK to 17.</message>
+                                </requireJavaVersion>
+                            </rules>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
