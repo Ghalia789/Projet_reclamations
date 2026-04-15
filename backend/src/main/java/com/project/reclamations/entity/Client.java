@@ -1,16 +1,21 @@
 package com.project.reclamations.entity;
 
+import com.project.reclamations.enums.TypeClient;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -45,9 +50,29 @@ public class Client {
     @Column(nullable = false, length = 20)
     private String telephone;
 
+    @Enumerated(EnumType.STRING)
+    @Column(length = 20)
+    private TypeClient typeClient;
+
+    @Column(length = 120)
+    private String ville;
+
+    @Column(nullable = false)
+    private LocalDateTime dateInscription;
+
     @Builder.Default
     @OneToMany(mappedBy = "client", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     private List<Reclamation> reclamations = new ArrayList<>();
+
+    @PrePersist
+    public void prePersist() {
+        if (dateInscription == null) {
+            dateInscription = LocalDateTime.now();
+        }
+        if (typeClient == null) {
+            typeClient = TypeClient.PARTICULIER;
+        }
+    }
 }

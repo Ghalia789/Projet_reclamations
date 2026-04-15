@@ -13,9 +13,13 @@ public class ReclamationMapper {
         }
         return ReclamationResponseDTO.builder()
                 .id(entity.getId())
+            .numeroTicket(entity.getNumeroTicket())
                 .description(entity.getDescription())
                 .dateCreation(entity.getDateCreation())
+            .dateResolution(entity.getDateResolution())
                 .statut(entity.getStatut())
+            .priorite(entity.getPriorite())
+            .canalOrigine(entity.getCanalOrigine())
                 .note(entity.getNote())
                 .clientId(entity.getClient() != null ? entity.getClient().getId() : null)
                 .produitId(entity.getProduit() != null ? entity.getProduit().getId() : null)

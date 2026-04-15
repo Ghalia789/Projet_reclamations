@@ -9,12 +9,17 @@ export interface Client {
   nom: string;
   email: string;
   telephone: string;
+  typeClient: 'PARTICULIER' | 'ENTREPRISE';
+  ville: string | null;
+  dateInscription: string;
 }
 
 export interface ClientCreatePayload {
   nom: string;
   email: string;
   telephone: string;
+  typeClient?: 'PARTICULIER' | 'ENTREPRISE';
+  ville?: string;
 }
 
 @Injectable({ providedIn: 'root' })

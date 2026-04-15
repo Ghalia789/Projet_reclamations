@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { NgFor, NgIf } from '@angular/common';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { AuthService } from './core/services/auth.service';
+import { ToastContainerComponent } from './shared/ui/toast-container.component';
 import {
   LucideAngularModule
 } from 'lucide-angular';
@@ -21,9 +22,11 @@ interface NavItem {
     RouterLinkActive,
     NgFor,
     NgIf,
+    ToastContainerComponent,
     LucideAngularModule
   ],
   template: `
+    <app-toast-container></app-toast-container>
     <div class="min-h-screen p-4 md:p-6">
       <header class="mb-6 rounded-2xl border border-brand-600/15 bg-white/90 px-6 py-4 shadow-soft backdrop-blur">
         <div class="flex flex-wrap items-center justify-between gap-4">

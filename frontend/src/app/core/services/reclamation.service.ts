@@ -6,12 +6,18 @@ import { TokenService } from './token.service';
 
 export type ReclamationStatut = 'OUVERTE' | 'EN_COURS' | 'RESOLUE' | 'FERMEE';
 export type ReclamationAction = 'CREATED' | 'ASSIGNED' | 'UPDATED' | 'RESOLVED' | 'CLOSED';
+export type ReclamationPriorite = 'BASSE' | 'MOYENNE' | 'HAUTE' | 'CRITIQUE';
+export type ReclamationCanal = 'WEB' | 'EMAIL' | 'TELEPHONE' | 'AGENCE';
 
 export interface Reclamation {
   id: number;
+  numeroTicket: string;
   description: string;
   dateCreation: string;
+  dateResolution: string | null;
   statut: ReclamationStatut;
+  priorite: ReclamationPriorite;
+  canalOrigine: ReclamationCanal;
   note: number | null;
   clientId: number;
   produitId: number;
@@ -24,6 +30,8 @@ export interface ReclamationCreatePayload {
   clientId: number;
   produitId: number;
   agentAssigneId?: number;
+  priorite?: ReclamationPriorite;
+  canalOrigine?: ReclamationCanal;
 }
 
 export interface ReclamationAssignPayload {

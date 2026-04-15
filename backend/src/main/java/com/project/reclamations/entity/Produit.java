@@ -39,6 +39,15 @@ public class Produit {
     @Column(nullable = false, length = 80)
     private String categorie;
 
+    @Column(length = 100)
+    private String marque;
+
+    @Column(length = 100)
+    private String modele;
+
+    @Column
+    private Integer garantieMois;
+
     @Builder.Default
     @OneToMany(mappedBy = "produit", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @ToString.Exclude

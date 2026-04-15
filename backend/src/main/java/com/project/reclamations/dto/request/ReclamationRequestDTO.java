@@ -1,5 +1,7 @@
 package com.project.reclamations.dto.request;
 
+import com.project.reclamations.enums.CanalOrigineReclamation;
+import com.project.reclamations.enums.PrioriteReclamation;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -29,4 +31,8 @@ public class ReclamationRequestDTO {
     private Long produitId;
 
     private Long agentAssigneId;
+
+    private PrioriteReclamation priorite;
+
+    private CanalOrigineReclamation canalOrigine;
 }

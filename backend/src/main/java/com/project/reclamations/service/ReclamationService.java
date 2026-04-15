@@ -19,6 +19,7 @@ import com.project.reclamations.repository.ClientRepository;
 import com.project.reclamations.repository.ProduitRepository;
 import com.project.reclamations.repository.ReclamationRepository;
 import com.project.reclamations.repository.SuiviReclamationRepository;
+import java.time.LocalDateTime;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
@@ -70,6 +71,8 @@ public class ReclamationService {
         Reclamation reclamation = Reclamation.builder()
                 .description(requestDTO.getDescription())
                 .note(requestDTO.getNote())
+            .priorite(requestDTO.getPriorite())
+            .canalOrigine(requestDTO.getCanalOrigine())
                 .client(client)
                 .produit(produit)
                 .agentAssigne(agentAssigne)
@@ -77,9 +80,9 @@ public class ReclamationService {
 
         Reclamation saved = reclamationRepository.save(reclamation);
 
-        createSuivi(saved, agentAssigne, ActionSuivi.CREATED, "Reclamation creee");
+        createSuivi(saved, agentAssigne, ActionSuivi.CREATED, "Reclamation creee", null, saved.getStatut());
         if (agentAssigne != null) {
-            createSuivi(saved, agentAssigne, ActionSuivi.ASSIGNED, "Reclamation assignee a un agent");
+            createSuivi(saved, agentAssigne, ActionSuivi.ASSIGNED, "Reclamation assignee a un agent", saved.getStatut(), saved.getStatut());
         }
 
         return reclamationMapper.toResponseDTO(saved);
@@ -90,21 +93,30 @@ public class ReclamationService {
         AgentSAV agent = agentSAVRepository.findById(agentId)
                 .orElseThrow(() -> new ResourceNotFoundException("Agent SAV introuvable avec l'id : " + agentId));
 
+        StatutReclamation statutAvant = reclamation.getStatut();
         reclamation.setAgentAssigne(agent);
         if (reclamation.getStatut() == StatutReclamation.OUVERTE) {
             reclamation.setStatut(StatutReclamation.EN_COURS);
         }
 
         Reclamation updated = reclamationRepository.save(reclamation);
-        createSuivi(updated, agent, ActionSuivi.ASSIGNED, "Agent assigne a la reclamation");
+        createSuivi(updated, agent, ActionSuivi.ASSIGNED, "Agent assigne a la reclamation", statutAvant, updated.getStatut());
 
         return reclamationMapper.toResponseDTO(updated);
     }
 
     public ReclamationResponseDTO updateStatut(Long reclamationId, StatutReclamation nouveauStatut, String message) {
         Reclamation reclamation = findReclamationById(reclamationId);
+        StatutReclamation statutAvant = reclamation.getStatut();
 
         reclamation.setStatut(nouveauStatut);
+        if (nouveauStatut == StatutReclamation.RESOLUE || nouveauStatut == StatutReclamation.FERMEE) {
+            if (reclamation.getDateResolution() == null) {
+                reclamation.setDateResolution(LocalDateTime.now());
+            }
+        } else {
+            reclamation.setDateResolution(null);
+        }
         Reclamation updated = reclamationRepository.save(reclamation);
 
         ActionSuivi action = mapStatutToAction(nouveauStatut);
@@ -112,7 +124,7 @@ public class ReclamationService {
                 ? "Statut mis a jour vers " + nouveauStatut.name()
                 : message;
 
-        createSuivi(updated, updated.getAgentAssigne(), action, suiviMessage);
+        createSuivi(updated, updated.getAgentAssigne(), action, suiviMessage, statutAvant, nouveauStatut);
 
         return reclamationMapper.toResponseDTO(updated);
     }
@@ -140,7 +152,9 @@ public class ReclamationService {
                 reclamation,
                 agentAuteur,
                 requestDTO.getAction(),
-                requestDTO.getMessage()
+            requestDTO.getMessage(),
+            reclamation.getStatut(),
+            reclamation.getStatut()
         );
 
         return suiviReclamationMapper.toResponseDTO(saved);
@@ -177,12 +191,21 @@ public class ReclamationService {
                 .orElseThrow(() -> new ResourceNotFoundException("Reclamation introuvable avec l'id : " + id));
     }
 
-    private SuiviReclamation createSuivi(Reclamation reclamation, AgentSAV agentAuteur, ActionSuivi action, String message) {
+        private SuiviReclamation createSuivi(
+            Reclamation reclamation,
+            AgentSAV agentAuteur,
+            ActionSuivi action,
+            String message,
+            StatutReclamation statutAvant,
+            StatutReclamation statutApres
+        ) {
         SuiviReclamation suivi = SuiviReclamation.builder()
                 .reclamation(reclamation)
                 .agentAuteur(agentAuteur)
                 .action(action)
                 .message(message)
+            .statutAvant(statutAvant)
+            .statutApres(statutApres)
                 .build();
 
         return suiviReclamationRepository.save(suivi);

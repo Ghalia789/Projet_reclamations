@@ -15,6 +15,8 @@ public class SuiviReclamationMapper {
                 .id(entity.getId())
                 .message(entity.getMessage())
                 .action(entity.getAction())
+                .statutAvant(entity.getStatutAvant())
+                .statutApres(entity.getStatutApres())
                 .dateAction(entity.getDateAction())
                 .reclamationId(entity.getReclamation() != null ? entity.getReclamation().getId() : null)
                 .agentAuteurId(entity.getAgentAuteur() != null ? entity.getAgentAuteur().getId() : null)

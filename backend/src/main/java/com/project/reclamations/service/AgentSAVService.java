@@ -46,6 +46,9 @@ public class AgentSAVService {
 
         agent.setNom(requestDTO.getNom());
         agent.setCompetence(requestDTO.getCompetence());
+        agent.setNiveau(requestDTO.getNiveau());
+        agent.setEquipe(requestDTO.getEquipe());
+        agent.setActif(requestDTO.getActif());
 
         return agentSAVMapper.toResponseDTO(agentSAVRepository.save(agent));
     }

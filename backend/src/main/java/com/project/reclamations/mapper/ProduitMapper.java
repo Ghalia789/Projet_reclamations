@@ -15,6 +15,9 @@ public class ProduitMapper {
         return Produit.builder()
                 .nom(dto.getNom())
                 .categorie(dto.getCategorie())
+            .marque(dto.getMarque())
+            .modele(dto.getModele())
+            .garantieMois(dto.getGarantieMois())
                 .build();
     }
 
@@ -26,6 +29,9 @@ public class ProduitMapper {
                 .id(entity.getId())
                 .nom(entity.getNom())
                 .categorie(entity.getCategorie())
+                .marque(entity.getMarque())
+                .modele(entity.getModele())
+                .garantieMois(entity.getGarantieMois())
                 .build();
     }
 }

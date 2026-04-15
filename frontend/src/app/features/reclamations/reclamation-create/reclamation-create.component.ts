@@ -7,6 +7,7 @@ import { Client, ClientService } from '../../../core/services/client.service';
 import { Produit, ProduitService } from '../../../core/services/produit.service';
 import { Agent, AgentService } from '../../../core/services/agent.service';
 import { ReclamationService } from '../../../core/services/reclamation.service';
+import { ToastService } from '../../../core/services/toast.service';
 
 @Component({
   selector: 'app-reclamation-create',
@@ -68,6 +69,26 @@ import { ReclamationService } from '../../../core/services/reclamation.service';
           </select>
         </label>
 
+        <label class="grid gap-1 text-sm font-medium text-slate-700">
+          Priorité
+          <select formControlName="priorite" class="rounded-xl border border-slate-300 px-3 py-2 outline-none focus:border-brand-600/50 focus:ring-2 focus:ring-brand-600/20">
+            <option value="BASSE">BASSE</option>
+            <option value="MOYENNE">MOYENNE</option>
+            <option value="HAUTE">HAUTE</option>
+            <option value="CRITIQUE">CRITIQUE</option>
+          </select>
+        </label>
+
+        <label class="grid gap-1 text-sm font-medium text-slate-700">
+          Canal d'origine
+          <select formControlName="canalOrigine" class="rounded-xl border border-slate-300 px-3 py-2 outline-none focus:border-brand-600/50 focus:ring-2 focus:ring-brand-600/20">
+            <option value="WEB">WEB</option>
+            <option value="EMAIL">EMAIL</option>
+            <option value="TELEPHONE">TELEPHONE</option>
+            <option value="AGENCE">AGENCE</option>
+          </select>
+        </label>
+
         <div class="md:col-span-2">
           <button type="submit" [disabled]="form.invalid || isSubmitting" class="rounded-xl bg-brand-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-700 disabled:cursor-not-allowed disabled:opacity-70">
             {{ isSubmitting ? 'Création...' : 'Créer réclamation' }}
@@ -92,7 +113,9 @@ export class ReclamationCreateComponent implements OnInit {
     clientId: ['', [Validators.required]],
     produitId: ['', [Validators.required]],
     agentAssigneId: [''],
-    note: ['']
+    note: [''],
+    priorite: ['MOYENNE' as 'BASSE' | 'MOYENNE' | 'HAUTE' | 'CRITIQUE', [Validators.required]],
+    canalOrigine: ['WEB' as 'WEB' | 'EMAIL' | 'TELEPHONE' | 'AGENCE', [Validators.required]]
   });
 
   constructor(
@@ -101,7 +124,8 @@ export class ReclamationCreateComponent implements OnInit {
     private readonly produitService: ProduitService,
     private readonly agentService: AgentService,
     private readonly reclamationService: ReclamationService,
-    private readonly router: Router
+    private readonly router: Router,
+    private readonly toastService: ToastService
   ) {}
 
   ngOnInit(): void {
@@ -118,6 +142,7 @@ export class ReclamationCreateComponent implements OnInit {
       },
       error: () => {
         this.errorMessage = 'Impossible de charger les données nécessaires à la création.';
+        this.toastService.loadError('les donnees de creation');
         this.isReferenceLoading = false;
       }
     });
@@ -131,21 +156,28 @@ export class ReclamationCreateComponent implements OnInit {
     const raw = this.form.getRawValue();
     this.isSubmitting = true;
     this.errorMessage = '';
+    const loadingToastId = this.toastService.loading('Traitement', 'Creation de la reclamation en cours...');
 
     this.reclamationService.create({
       description: raw.description,
       clientId: Number(raw.clientId),
       produitId: Number(raw.produitId),
       ...(raw.agentAssigneId ? { agentAssigneId: Number(raw.agentAssigneId) } : {}),
-      ...(raw.note ? { note: Number(raw.note) } : {})
+      ...(raw.note ? { note: Number(raw.note) } : {}),
+      priorite: raw.priorite,
+      canalOrigine: raw.canalOrigine
     }).subscribe({
       next: () => {
+        this.toastService.dismiss(loadingToastId);
         this.isSubmitting = false;
+        this.toastService.created('Reclamation');
         this.router.navigate(['/reclamations']);
       },
       error: () => {
+        this.toastService.dismiss(loadingToastId);
         this.isSubmitting = false;
         this.errorMessage = 'Impossible de créer la réclamation pour le moment.';
+        this.toastService.actionError('creer la reclamation');
       }
     });
   }

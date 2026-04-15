@@ -8,11 +8,17 @@ export interface Produit {
   id: number;
   nom: string;
   categorie: string;
+  marque: string | null;
+  modele: string | null;
+  garantieMois: number | null;
 }
 
 export interface ProduitCreatePayload {
   nom: string;
   categorie: string;
+  marque?: string;
+  modele?: string;
+  garantieMois?: number;
 }
 
 @Injectable({ providedIn: 'root' })

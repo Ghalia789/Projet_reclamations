@@ -6,6 +6,7 @@ import { Reclamation, ReclamationService } from '../../../core/services/reclamat
 import { ClientService } from '../../../core/services/client.service';
 import { ProduitService } from '../../../core/services/produit.service';
 import { AgentService } from '../../../core/services/agent.service';
+import { ToastService } from '../../../core/services/toast.service';
 import { forkJoin } from 'rxjs';
 
 @Component({
@@ -64,22 +65,29 @@ import { forkJoin } from 'rxjs';
         <table class="w-full border-collapse bg-white text-left text-sm">
           <thead class="bg-slate-50 text-slate-600">
             <tr>
-              <th class="px-4 py-3 font-semibold">ID</th>
+              <th class="px-4 py-3 font-semibold">Ticket</th>
               <th class="px-4 py-3 font-semibold">Description</th>
+              <th class="px-4 py-3 font-semibold">Priorité</th>
               <th class="px-4 py-3 font-semibold">Statut</th>
               <th class="px-4 py-3 font-semibold">Client</th>
               <th class="px-4 py-3 font-semibold">Produit</th>
               <th class="px-4 py-3 font-semibold">Assignée à</th>
               <th class="px-4 py-3 font-semibold">Date</th>
+              <th class="px-4 py-3 font-semibold">Action</th>
             </tr>
           </thead>
           <tbody>
             <tr *ngFor="let reclamation of filteredReclamations" class="border-t border-slate-100">
               <td class="px-4 py-3 text-slate-500">
-                <a [routerLink]="['/reclamations', reclamation.id]" class="font-semibold text-brand-700 hover:underline">#{{ reclamation.id }}</a>
+                <a [routerLink]="['/reclamations', reclamation.id]" class="font-semibold text-brand-700 hover:underline">{{ reclamation.numeroTicket || ('#' + reclamation.id) }}</a>
               </td>
               <td class="px-4 py-3 text-slate-800">
                 <a [routerLink]="['/reclamations', reclamation.id]" class="hover:underline">{{ reclamation.description }}</a>
+              </td>
+              <td class="px-4 py-3 text-slate-700">
+                <span class="inline-flex rounded-full px-2.5 py-1 text-xs font-semibold" [ngClass]="getPrioriteBadgeClass(reclamation.priorite)">
+                  {{ reclamation.priorite }}
+                </span>
               </td>
               <td class="px-4 py-3 text-slate-700">
                 <span class="inline-flex rounded-full px-2.5 py-1 text-xs font-semibold" [ngClass]="getStatutBadgeClass(reclamation.statut)">
@@ -90,9 +98,14 @@ import { forkJoin } from 'rxjs';
               <td class="px-4 py-3 text-slate-600">{{ getProduitName(reclamation.produitId) }}</td>
               <td class="px-4 py-3 text-slate-600">{{ getAgentName(reclamation.agentAssigneId) }}</td>
               <td class="px-4 py-3 text-slate-600">{{ reclamation.dateCreation | date:'short' }}</td>
+              <td class="px-4 py-3 text-slate-600">
+                <a [routerLink]="['/reclamations', reclamation.id]" class="rounded-lg border border-brand-600/30 px-2.5 py-1.5 text-xs font-semibold text-brand-700 transition hover:bg-brand-50">
+                  Voir détail
+                </a>
+              </td>
             </tr>
             <tr *ngIf="filteredReclamations.length === 0">
-              <td colspan="7" class="px-4 py-5 text-center text-slate-500">Aucune réclamation disponible.</td>
+              <td colspan="9" class="px-4 py-5 text-center text-slate-500">Aucune réclamation disponible.</td>
             </tr>
           </tbody>
         </table>
@@ -123,7 +136,8 @@ export class ReclamationListComponent implements OnInit {
     private readonly reclamationService: ReclamationService,
     private readonly clientService: ClientService,
     private readonly produitService: ProduitService,
-    private readonly agentService: AgentService
+    private readonly agentService: AgentService,
+    private readonly toastService: ToastService
   ) {}
 
   ngOnInit(): void {
@@ -153,6 +167,7 @@ export class ReclamationListComponent implements OnInit {
       },
       error: () => {
         this.errorMessage = 'Impossible de charger les réclamations pour le moment.';
+        this.toastService.loadError('les reclamations');
         this.isLoading = false;
       }
     });
@@ -224,5 +239,16 @@ export class ReclamationListComponent implements OnInit {
     };
 
     return classesByStatus[statut];
+  }
+
+  getPrioriteBadgeClass(priorite: Reclamation['priorite']): string {
+    const classesByPriority: Record<Reclamation['priorite'], string> = {
+      BASSE: 'bg-slate-100 text-slate-700',
+      MOYENNE: 'bg-indigo-100 text-indigo-800',
+      HAUTE: 'bg-orange-100 text-orange-800',
+      CRITIQUE: 'bg-rose-100 text-rose-800'
+    };
+
+    return classesByPriority[priorite];
   }
 }

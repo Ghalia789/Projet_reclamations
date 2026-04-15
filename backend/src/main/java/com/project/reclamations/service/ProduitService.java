@@ -46,6 +46,9 @@ public class ProduitService {
 
         produit.setNom(requestDTO.getNom());
         produit.setCategorie(requestDTO.getCategorie());
+        produit.setMarque(requestDTO.getMarque());
+        produit.setModele(requestDTO.getModele());
+        produit.setGarantieMois(requestDTO.getGarantieMois());
 
         return produitMapper.toResponseDTO(produitRepository.save(produit));
     }

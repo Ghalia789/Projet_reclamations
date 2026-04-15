@@ -13,4 +13,7 @@ public class ProduitResponseDTO {
     private Long id;
     private String nom;
     private String categorie;
+    private String marque;
+    private String modele;
+    private Integer garantieMois;
 }

@@ -15,6 +15,9 @@ public class AgentSAVMapper {
         return AgentSAV.builder()
                 .nom(dto.getNom())
                 .competence(dto.getCompetence())
+            .niveau(dto.getNiveau())
+            .equipe(dto.getEquipe())
+            .actif(dto.getActif())
                 .build();
     }
 
@@ -26,6 +29,9 @@ public class AgentSAVMapper {
                 .id(entity.getId())
                 .nom(entity.getNom())
                 .competence(entity.getCompetence())
+                .niveau(entity.getNiveau())
+                .equipe(entity.getEquipe())
+                .actif(entity.getActif())
                 .build();
     }
 }

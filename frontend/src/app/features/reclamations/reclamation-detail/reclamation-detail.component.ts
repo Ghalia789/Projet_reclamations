@@ -12,6 +12,7 @@ import {
   ReclamationStatut,
   SuiviReclamation
 } from '../../../core/services/reclamation.service';
+import { ToastService } from '../../../core/services/toast.service';
 
 @Component({
   selector: 'app-reclamation-detail',
@@ -117,7 +118,8 @@ export class ReclamationDetailComponent implements OnInit {
     private readonly reclamationService: ReclamationService,
     private readonly agentService: AgentService,
     private readonly clientService: ClientService,
-    private readonly produitService: ProduitService
+    private readonly produitService: ProduitService,
+    private readonly toastService: ToastService
   ) {}
 
   ngOnInit(): void {
@@ -138,14 +140,19 @@ export class ReclamationDetailComponent implements OnInit {
     }
 
     this.isAssigning = true;
+    const loadingToastId = this.toastService.loading('Traitement', 'Assignation en cours...');
     this.reclamationService.assignAgent(this.reclamationId, { agentId: Number(this.selectedAgentId) }).subscribe({
       next: () => {
+        this.toastService.dismiss(loadingToastId);
         this.isAssigning = false;
+        this.toastService.updated('Assignation');
         this.loadDetail(this.reclamationId as number);
       },
       error: () => {
+        this.toastService.dismiss(loadingToastId);
         this.isAssigning = false;
         this.errorMessage = 'Impossible d\'assigner l\'agent pour le moment.';
+        this.toastService.actionError('assigner l\'agent');
       }
     });
   }
@@ -156,18 +163,23 @@ export class ReclamationDetailComponent implements OnInit {
     }
 
     this.isUpdatingStatut = true;
+    const loadingToastId = this.toastService.loading('Traitement', 'Mise a jour du statut en cours...');
     this.reclamationService.updateStatut(this.reclamationId, {
       statut: this.selectedStatut,
       ...(this.statusMessage.trim() ? { message: this.statusMessage.trim() } : {})
     }).subscribe({
       next: () => {
+        this.toastService.dismiss(loadingToastId);
         this.isUpdatingStatut = false;
         this.statusMessage = '';
+        this.toastService.updated('Statut');
         this.loadDetail(this.reclamationId as number);
       },
       error: () => {
+        this.toastService.dismiss(loadingToastId);
         this.isUpdatingStatut = false;
         this.errorMessage = 'Impossible de mettre à jour le statut pour le moment.';
+        this.toastService.actionError('mettre a jour le statut');
       }
     });
   }

@@ -58,6 +58,8 @@ public class ClientService {
         existingClient.setNom(requestDTO.getNom());
         existingClient.setEmail(requestDTO.getEmail());
         existingClient.setTelephone(requestDTO.getTelephone());
+        existingClient.setTypeClient(requestDTO.getTypeClient());
+        existingClient.setVille(requestDTO.getVille());
 
         return clientMapper.toResponseDTO(clientRepository.save(existingClient));
     }

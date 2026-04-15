@@ -1,5 +1,6 @@
 package com.project.reclamations.dto.request;
 
+import com.project.reclamations.enums.NiveauAgent;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,4 +18,10 @@ public class AgentSAVRequestDTO {
 
     @NotBlank(message = "La competence est obligatoire")
     private String competence;
+
+    private NiveauAgent niveau;
+
+    private String equipe;
+
+    private Boolean actif;
 }

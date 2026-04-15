@@ -8,11 +8,17 @@ export interface Agent {
   id: number;
   nom: string;
   competence: string;
+  niveau: 'L1' | 'L2' | 'EXPERT';
+  equipe: string | null;
+  actif: boolean;
 }
 
 export interface AgentCreatePayload {
   nom: string;
   competence: string;
+  niveau?: 'L1' | 'L2' | 'EXPERT';
+  equipe?: string;
+  actif?: boolean;
 }
 
 @Injectable({ providedIn: 'root' })

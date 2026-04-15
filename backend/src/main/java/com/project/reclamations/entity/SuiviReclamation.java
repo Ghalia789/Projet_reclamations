@@ -1,6 +1,7 @@
 package com.project.reclamations.entity;
 
 import com.project.reclamations.enums.ActionSuivi;
+import com.project.reclamations.enums.StatutReclamation;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -41,6 +42,14 @@ public class SuiviReclamation {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private ActionSuivi action;
+
+    @Enumerated(EnumType.STRING)
+    @Column(length = 20)
+    private StatutReclamation statutAvant;
+
+    @Enumerated(EnumType.STRING)
+    @Column(length = 20)
+    private StatutReclamation statutApres;
 
     @Column(nullable = false)
     private LocalDateTime dateAction;

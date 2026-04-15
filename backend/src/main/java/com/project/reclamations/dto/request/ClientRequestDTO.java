@@ -1,5 +1,6 @@
 package com.project.reclamations.dto.request;
 
+import com.project.reclamations.enums.TypeClient;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -22,4 +23,8 @@ public class ClientRequestDTO {
 
     @NotBlank(message = "Le telephone est obligatoire")
     private String telephone;
+
+    private TypeClient typeClient;
+
+    private String ville;
 }

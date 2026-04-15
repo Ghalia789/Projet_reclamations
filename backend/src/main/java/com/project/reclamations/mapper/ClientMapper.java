@@ -16,6 +16,8 @@ public class ClientMapper {
                 .nom(dto.getNom())
                 .email(dto.getEmail())
                 .telephone(dto.getTelephone())
+            .typeClient(dto.getTypeClient())
+            .ville(dto.getVille())
                 .build();
     }
 
@@ -28,6 +30,9 @@ public class ClientMapper {
                 .nom(entity.getNom())
                 .email(entity.getEmail())
                 .telephone(entity.getTelephone())
+                .typeClient(entity.getTypeClient())
+                .ville(entity.getVille())
+                .dateInscription(entity.getDateInscription())
                 .build();
     }
 }
