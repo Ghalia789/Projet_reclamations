@@ -1,0 +1,36 @@
+{
+  "groups": [
+    {
+      "name": "app.security",
+      "type": "com.project.reclamations.config.properties.AppSecurityProperties",
+      "sourceType": "com.project.reclamations.config.properties.AppSecurityProperties"
+    },
+    {
+      "name": "app.jwt",
+      "type": "com.project.reclamations.config.properties.JwtProperties",
+      "sourceType": "com.project.reclamations.config.properties.JwtProperties"
+    }
+  ],
+  "properties": [
+    {
+      "name": "app.security.username",
+      "type": "java.lang.String",
+      "sourceType": "com.project.reclamations.config.properties.AppSecurityProperties"
+    },
+    {
+      "name": "app.security.password",
+      "type": "java.lang.String",
+      "sourceType": "com.project.reclamations.config.properties.AppSecurityProperties"
+    },
+    {
+      "name": "app.jwt.secret",
+      "type": "java.lang.String",
+      "sourceType": "com.project.reclamations.config.properties.JwtProperties"
+    },
+    {
+      "name": "app.jwt.expiration-ms",
+      "type": "java.lang.Long",
+      "sourceType": "com.project.reclamations.config.properties.JwtProperties"
+    }
+  ]
+}
