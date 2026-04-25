@@ -23,8 +23,8 @@ export const routes: Routes = [
       { path: 'agents', component: AgentsComponent },
       { path: 'reclamations', component: ReclamationListComponent },
       { path: 'reclamations/new', component: ReclamationCreateComponent },
-      { path: 'reclamations/:id', component: ReclamationDetailComponent },
-      { path: 'reclamations/report', component: ReclamationReportComponent }
+      { path: 'reclamations/report', component: ReclamationReportComponent },
+      { path: 'reclamations/:id', component: ReclamationDetailComponent }
     ]
   },
   { path: '**', redirectTo: 'dashboard' }

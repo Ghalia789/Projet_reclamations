@@ -16,15 +16,20 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -104,7 +109,7 @@ public class ReclamationController {
             @PathVariable Long id,
             @Valid @RequestBody UpdateStatutRequestDTO requestDTO
     ) {
-        return ResponseEntity.ok(reclamationService.updateStatut(id, requestDTO.getStatut(), requestDTO.getMessage()));
+        return ResponseEntity.ok(reclamationService.updateStatut(id, requestDTO.getStatut(), requestDTO.getMessage(), requestDTO.getTimeSpentMinutes()));
     }
 
     @GetMapping("/{id}/suivi")
@@ -143,7 +148,54 @@ public class ReclamationController {
             @ApiResponse(responseCode = "500", description = "Erreur interne",
                     content = @Content(schema = @Schema(implementation = ApiErrorResponse.class)))
     })
-    public ResponseEntity<Map<String, Object>> getRapport() {
-        return ResponseEntity.ok(reclamationService.getRapportSatisfaction());
+    public ResponseEntity<Map<String, Object>> getRapport(
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDate
+    ) {
+        return ResponseEntity.ok(reclamationService.getRapportSatisfaction(fromDate, toDate));
+    }
+
+    @GetMapping("/rapport/download")
+    @Operation(summary = "Telecharger le rapport de satisfaction")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Rapport telecharge"),
+            @ApiResponse(responseCode = "400", description = "Format non supporte",
+                    content = @Content(schema = @Schema(implementation = ApiErrorResponse.class)))
+    })
+    public ResponseEntity<byte[]> downloadRapport(
+            @RequestParam(defaultValue = "csv") String format,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDate
+    ) {
+        String normalizedFormat = format.toLowerCase();
+        byte[] fileContent;
+        String filename;
+        String contentType;
+
+        switch (normalizedFormat) {
+            case "csv" -> {
+                fileContent = reclamationService.generateRapportCsv(fromDate, toDate);
+                filename = reclamationService.buildRapportFilename("csv");
+                contentType = "text/csv";
+            }
+            case "json" -> {
+                fileContent = reclamationService.generateRapportJson(fromDate, toDate);
+                filename = reclamationService.buildRapportFilename("json");
+                contentType = MediaType.APPLICATION_JSON_VALUE;
+            }
+            case "pdf" -> {
+                fileContent = reclamationService.generateRapportPdf(fromDate, toDate);
+                filename = reclamationService.buildRapportFilename("pdf");
+                contentType = MediaType.APPLICATION_PDF_VALUE;
+            }
+            default -> {
+                return ResponseEntity.badRequest().build();
+            }
+        }
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
+                .contentType(MediaType.parseMediaType(contentType))
+                .body(fileContent);
     }
 }

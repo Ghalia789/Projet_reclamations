@@ -89,6 +89,24 @@ import { ToastService } from '../../../core/services/toast.service';
           </select>
         </label>
 
+        <label class="grid gap-1 text-sm font-medium text-slate-700">
+          Cause racine (optionnelle)
+          <select formControlName="rootCause" class="rounded-xl border border-slate-300 px-3 py-2 outline-none focus:border-brand-600/50 focus:ring-2 focus:ring-brand-600/20">
+            <option value="">Non renseignée</option>
+            <option value="QUALITE_PRODUIT">QUALITE_PRODUIT</option>
+            <option value="DEFAUT_LIVRAISON">DEFAUT_LIVRAISON</option>
+            <option value="RETARD_LIVRAISON">RETARD_LIVRAISON</option>
+            <option value="FACTURATION">FACTURATION</option>
+            <option value="MAUVAISE_UTILISATION">MAUVAISE_UTILISATION</option>
+            <option value="AUTRE">AUTRE</option>
+          </select>
+        </label>
+
+        <label class="grid gap-1 text-sm font-medium text-slate-700">
+          Echéance SLA (optionnelle)
+          <input formControlName="slaDueAt" type="datetime-local" class="rounded-xl border border-slate-300 px-3 py-2 outline-none focus:border-brand-600/50 focus:ring-2 focus:ring-brand-600/20">
+        </label>
+
         <div class="md:col-span-2">
           <button type="submit" [disabled]="form.invalid || isSubmitting" class="rounded-xl bg-brand-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-700 disabled:cursor-not-allowed disabled:opacity-70">
             {{ isSubmitting ? 'Création...' : 'Créer réclamation' }}
@@ -115,7 +133,9 @@ export class ReclamationCreateComponent implements OnInit {
     agentAssigneId: [''],
     note: [''],
     priorite: ['MOYENNE' as 'BASSE' | 'MOYENNE' | 'HAUTE' | 'CRITIQUE', [Validators.required]],
-    canalOrigine: ['WEB' as 'WEB' | 'EMAIL' | 'TELEPHONE' | 'AGENCE', [Validators.required]]
+    canalOrigine: ['WEB' as 'WEB' | 'EMAIL' | 'TELEPHONE' | 'AGENCE', [Validators.required]],
+    rootCause: [''],
+    slaDueAt: ['']
   });
 
   constructor(
@@ -165,7 +185,9 @@ export class ReclamationCreateComponent implements OnInit {
       ...(raw.agentAssigneId ? { agentAssigneId: Number(raw.agentAssigneId) } : {}),
       ...(raw.note ? { note: Number(raw.note) } : {}),
       priorite: raw.priorite,
-      canalOrigine: raw.canalOrigine
+      canalOrigine: raw.canalOrigine,
+      ...(raw.rootCause ? { rootCause: raw.rootCause as 'QUALITE_PRODUIT' | 'DEFAUT_LIVRAISON' | 'RETARD_LIVRAISON' | 'FACTURATION' | 'MAUVAISE_UTILISATION' | 'AUTRE' } : {}),
+      ...(raw.slaDueAt ? { slaDueAt: raw.slaDueAt } : {})
     }).subscribe({
       next: () => {
         this.toastService.dismiss(loadingToastId);

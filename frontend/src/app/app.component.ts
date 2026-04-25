@@ -39,7 +39,7 @@ interface NavItem {
             <a
               *ngFor="let item of navItems"
               [routerLink]="item.to"
-              routerLinkActive="active"
+              [class.active]="isNavItemActive(item.to)"
               class="nav-pill"
             >
               <lucide-icon [name]="item.icon" class="h-4 w-4" aria-hidden="true"></lucide-icon>
@@ -71,10 +71,29 @@ export class AppComponent {
     { to: '/clients', label: 'Clients', icon: 'users' },
     { to: '/produits', label: 'Produits', icon: 'package' },
     { to: '/agents', label: 'Agents', icon: 'headphones' },
-    { to: '/reclamations', label: 'Réclamations', icon: 'file-warning' }
+    { to: '/reclamations', label: 'Réclamations', icon: 'file-warning' },
+    { to: '/reclamations/report', label: 'Rapports', icon: 'bar-chart-3' }
   ];
 
   constructor(public authService: AuthService, private readonly router: Router) {}
+
+  isNavItemActive(path: string): boolean {
+    const current = this.router.url;
+
+    if (path === '/reclamations/report') {
+      return current === '/reclamations/report';
+    }
+
+    if (path === '/reclamations') {
+      if (current === '/reclamations/report') {
+        return false;
+      }
+
+      return current === '/reclamations' || current.startsWith('/reclamations/');
+    }
+
+    return current === path || current.startsWith(`${path}/`);
+  }
 
   logout(): void {
     this.authService.logout();

@@ -19,6 +19,7 @@ public class SuiviReclamationResponseDTO {
     private StatutReclamation statutAvant;
     private StatutReclamation statutApres;
     private LocalDateTime dateAction;
+    private Integer timeSpentMinutes;
     private Long reclamationId;
     private Long agentAuteurId;
 }

@@ -2,6 +2,7 @@ import { ApplicationConfig, importProvidersFrom } from '@angular/core';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideRouter } from '@angular/router';
 import {
+  BarChart3,
   FileWarning,
   Headphones,
   LayoutDashboard,
@@ -24,6 +25,7 @@ export const appConfig: ApplicationConfig = {
         Package,
         Headphones,
         FileWarning,
+        BarChart3,
         LogOut
       })
     )

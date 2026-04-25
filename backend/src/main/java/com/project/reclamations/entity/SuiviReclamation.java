@@ -16,6 +16,7 @@ import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PositiveOrZero;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -53,6 +54,10 @@ public class SuiviReclamation {
 
     @Column(nullable = false)
     private LocalDateTime dateAction;
+
+    @PositiveOrZero(message = "Le temps passe doit etre positif ou nul")
+    @Column
+    private Integer timeSpentMinutes;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "reclamation_id", nullable = false)

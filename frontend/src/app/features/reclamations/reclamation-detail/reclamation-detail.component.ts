@@ -44,6 +44,9 @@ import { ToastService } from '../../../core/services/toast.service';
           <p class="text-sm text-slate-600"><span class="font-semibold text-slate-800">Produit:</span> {{ getProduitName(reclamation.produitId) }}</p>
           <p class="text-sm text-slate-600"><span class="font-semibold text-slate-800">Assignée à:</span> {{ getAgentName(reclamation.agentAssigneId) }}</p>
           <p class="text-sm text-slate-600"><span class="font-semibold text-slate-800">Statut:</span> {{ reclamation.statut }}</p>
+          <p class="text-sm text-slate-600"><span class="font-semibold text-slate-800">Cause:</span> {{ reclamation.rootCause || 'NON_RENSEIGNEE' }}</p>
+          <p class="text-sm text-slate-600"><span class="font-semibold text-slate-800">SLA:</span> {{ reclamation.slaDueAt ? (reclamation.slaDueAt | date:'short') : 'Non défini' }}</p>
+          <p class="text-sm text-slate-600"><span class="font-semibold text-slate-800">Réouvertures:</span> {{ reclamation.reopenCount }}</p>
           <p class="text-sm text-slate-600 md:col-span-2"><span class="font-semibold text-slate-800">Description:</span> {{ reclamation.description }}</p>
         </div>
 
@@ -67,6 +70,7 @@ import { ToastService } from '../../../core/services/toast.service';
               <option *ngFor="let statut of statusOptions" [value]="statut">{{ statut }}</option>
             </select>
             <input [(ngModel)]="statusMessage" type="text" placeholder="Message de suivi (optionnel)" class="rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none focus:border-brand-600/50 focus:ring-2 focus:ring-brand-600/20">
+            <input [(ngModel)]="timeSpentMinutes" type="number" min="0" placeholder="Temps passé (minutes, optionnel)" class="rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none focus:border-brand-600/50 focus:ring-2 focus:ring-brand-600/20">
             <button type="button" [disabled]="isUpdatingStatut" (click)="updateStatut()" class="w-fit rounded-xl bg-slate-800 px-3 py-2 text-sm font-semibold text-white transition hover:bg-slate-900 disabled:cursor-not-allowed disabled:opacity-70">
               {{ isUpdatingStatut ? '...' : 'Mettre à jour' }}
             </button>
@@ -85,6 +89,7 @@ import { ToastService } from '../../../core/services/toast.service';
           <li *ngFor="let suivi of suivis" class="rounded-xl border border-slate-200 px-3 py-2">
             <p class="text-sm font-semibold text-slate-800">{{ suivi.action }} - {{ suivi.dateAction | date:'short' }}</p>
             <p class="text-sm text-slate-600">{{ suivi.message }}</p>
+            <p class="text-xs text-slate-500" *ngIf="suivi.timeSpentMinutes != null">Temps passe: {{ suivi.timeSpentMinutes }} min</p>
             <p class="text-xs text-slate-500">Auteur: {{ getAgentName(suivi.agentAuteurId) }}</p>
           </li>
         </ul>
@@ -105,6 +110,7 @@ export class ReclamationDetailComponent implements OnInit {
   selectedAgentId = '';
   selectedStatut: ReclamationStatut = 'OUVERTE';
   statusMessage = '';
+  timeSpentMinutes = '';
 
   readonly statusOptions: ReclamationStatut[] = ['OUVERTE', 'EN_COURS', 'RESOLUE', 'FERMEE'];
   private reclamationId: number | null = null;
@@ -123,8 +129,9 @@ export class ReclamationDetailComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    const id = Number(this.route.snapshot.paramMap.get('id'));
-    if (!Number.isFinite(id)) {
+    const idRaw = this.route.snapshot.paramMap.get('id');
+    const id = Number(idRaw);
+    if (!idRaw || !Number.isInteger(id) || id <= 0) {
       this.errorMessage = 'Identifiant de réclamation invalide.';
       this.isLoading = false;
       return;
@@ -166,12 +173,14 @@ export class ReclamationDetailComponent implements OnInit {
     const loadingToastId = this.toastService.loading('Traitement', 'Mise a jour du statut en cours...');
     this.reclamationService.updateStatut(this.reclamationId, {
       statut: this.selectedStatut,
-      ...(this.statusMessage.trim() ? { message: this.statusMessage.trim() } : {})
+      ...(this.statusMessage.trim() ? { message: this.statusMessage.trim() } : {}),
+      ...(this.timeSpentMinutes.trim() ? { timeSpentMinutes: Number(this.timeSpentMinutes) } : {})
     }).subscribe({
       next: () => {
         this.toastService.dismiss(loadingToastId);
         this.isUpdatingStatut = false;
         this.statusMessage = '';
+        this.timeSpentMinutes = '';
         this.toastService.updated('Statut');
         this.loadDetail(this.reclamationId as number);
       },

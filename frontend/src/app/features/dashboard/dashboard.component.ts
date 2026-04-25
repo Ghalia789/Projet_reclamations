@@ -26,6 +26,7 @@ import { ToastService } from '../../core/services/toast.service';
           <div class="flex flex-wrap gap-2">
             <a routerLink="/reclamations/new" class="rounded-xl bg-brand-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-brand-700">Nouvelle réclamation</a>
             <a routerLink="/reclamations" class="rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">Voir le backlog</a>
+            <a routerLink="/reclamations/report" class="rounded-xl border border-teal-300 bg-teal-50 px-4 py-2 text-sm font-semibold text-teal-800 transition hover:bg-teal-100">Voir les rapports</a>
           </div>
         </div>
       </header>

@@ -2,6 +2,7 @@ package com.project.reclamations.entity;
 
 import com.project.reclamations.enums.CanalOrigineReclamation;
 import com.project.reclamations.enums.PrioriteReclamation;
+import com.project.reclamations.enums.RootCauseReclamation;
 import com.project.reclamations.enums.StatutReclamation;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -73,6 +74,16 @@ public class Reclamation {
     @Column
     private LocalDateTime dateResolution;
 
+    @Column
+    private LocalDateTime slaDueAt;
+
+    @Enumerated(EnumType.STRING)
+    @Column(length = 40)
+    private RootCauseReclamation rootCause;
+
+    @Column(nullable = false)
+    private Integer reopenCount;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "client_id", nullable = false)
     private Client client;
@@ -107,6 +118,9 @@ public class Reclamation {
         }
         if (numeroTicket == null || numeroTicket.isBlank()) {
             numeroTicket = "TCK-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
+        }
+        if (reopenCount == null) {
+            reopenCount = 0;
         }
     }
 }
