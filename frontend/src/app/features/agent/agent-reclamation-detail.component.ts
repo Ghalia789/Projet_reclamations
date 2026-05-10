@@ -104,7 +104,7 @@ export class AgentReclamationDetailComponent implements OnInit {
 
   selectedStatut: ReclamationStatut = 'OUVERTE';
   statusMessage = '';
-  timeSpentMinutes = '';
+  timeSpentMinutes: number | null = null;
 
   readonly statusOptions: ReclamationStatut[] = ['OUVERTE', 'EN_COURS', 'RESOLUE', 'FERMEE'];
 
@@ -146,16 +146,18 @@ export class AgentReclamationDetailComponent implements OnInit {
     this.isUpdatingStatut = true;
     const loadingToastId = this.toastService.loading('Traitement', 'Mise a jour du statut en cours...');
 
+    const timeSpent = this.timeSpentMinutes;
+
     this.agentMeService.updateStatut(this.reclamationId, {
       statut: this.selectedStatut,
       ...(this.statusMessage.trim() ? { message: this.statusMessage.trim() } : {}),
-      ...(this.timeSpentMinutes.trim() ? { timeSpentMinutes: Number(this.timeSpentMinutes) } : {})
+      ...(timeSpent != null && !Number.isNaN(timeSpent) ? { timeSpentMinutes: timeSpent } : {})
     }).subscribe({
       next: () => {
         this.toastService.dismiss(loadingToastId);
         this.isUpdatingStatut = false;
         this.statusMessage = '';
-        this.timeSpentMinutes = '';
+        this.timeSpentMinutes = null;
         this.toastService.updated('Statut');
         this.loadDetail(this.reclamationId as number);
       },

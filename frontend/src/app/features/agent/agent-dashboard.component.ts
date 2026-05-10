@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { DatePipe, NgFor, NgIf } from '@angular/common';
+import { DatePipe, NgClass, NgFor, NgIf } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { AgentMeService } from '../../core/services/agent-me.service';
 import { Reclamation } from '../../core/services/reclamation.service';
@@ -7,7 +7,7 @@ import { Reclamation } from '../../core/services/reclamation.service';
 @Component({
   selector: 'app-agent-dashboard',
   standalone: true,
-  imports: [NgIf, NgFor, DatePipe, RouterLink],
+  imports: [NgIf, NgFor, NgClass, DatePipe, RouterLink],
   template: `
     <section class="grid gap-6">
       <header class="rounded-3xl border border-slate-200 bg-white p-6">
@@ -61,8 +61,16 @@ import { Reclamation } from '../../core/services/reclamation.service';
                     {{ item.numeroTicket || ('#' + item.id) }}
                   </a>
                 </td>
-                <td class="px-3 py-2 text-slate-700">{{ item.statut }}</td>
-                <td class="px-3 py-2 text-slate-700">{{ item.priorite }}</td>
+                <td class="px-3 py-2">
+                  <span class="inline-flex rounded-full px-2.5 py-1 text-xs font-semibold" [ngClass]="getStatusClass(item.statut)">
+                    {{ item.statut }}
+                  </span>
+                </td>
+                <td class="px-3 py-2">
+                  <span class="inline-flex rounded-full px-2.5 py-1 text-xs font-semibold" [ngClass]="getPriorityClass(item.priorite)">
+                    {{ item.priorite }}
+                  </span>
+                </td>
                 <td class="px-3 py-2 text-slate-600">{{ item.dateCreation | date:'short' }}</td>
               </tr>
               <tr *ngIf="recent.length === 0">
@@ -107,5 +115,27 @@ export class AgentDashboardComponent implements OnInit {
         this.isLoading = false;
       }
     });
+  }
+
+  getStatusClass(statut: Reclamation['statut']): string {
+    const classes: Record<Reclamation['statut'], string> = {
+      OUVERTE: 'bg-amber-100 text-amber-800',
+      EN_COURS: 'bg-sky-100 text-sky-800',
+      RESOLUE: 'bg-emerald-100 text-emerald-800',
+      FERMEE: 'bg-slate-200 text-slate-700'
+    };
+
+    return classes[statut];
+  }
+
+  getPriorityClass(priorite: Reclamation['priorite']): string {
+    const classes: Record<Reclamation['priorite'], string> = {
+      BASSE: 'bg-slate-100 text-slate-700',
+      MOYENNE: 'bg-indigo-100 text-indigo-800',
+      HAUTE: 'bg-orange-100 text-orange-800',
+      CRITIQUE: 'bg-rose-100 text-rose-800'
+    };
+
+    return classes[priorite];
   }
 }

@@ -99,7 +99,7 @@ import { forkJoin } from 'rxjs';
               <td class="px-4 py-3 text-slate-600">{{ getAgentName(reclamation.agentAssigneId) }}</td>
               <td class="px-4 py-3 text-slate-600">{{ reclamation.dateCreation | date:'short' }}</td>
               <td class="px-4 py-3 text-slate-600">
-                <a [routerLink]="['/reclamations', reclamation.id]" class="rounded-lg border border-brand-600/30 px-2.5 py-1.5 text-xs font-semibold text-brand-700 transition hover:bg-brand-50">
+                <a [routerLink]="['/reclamations', reclamation.id]" class="inline-flex items-center whitespace-nowrap rounded-lg border border-brand-600/30 px-2.5 py-1.5 text-xs font-semibold text-brand-700 transition hover:bg-brand-50">
                   Voir détail
                 </a>
               </td>
