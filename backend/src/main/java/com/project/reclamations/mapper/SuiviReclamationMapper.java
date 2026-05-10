@@ -2,25 +2,20 @@ package com.project.reclamations.mapper;
 
 import com.project.reclamations.dto.response.SuiviReclamationResponseDTO;
 import com.project.reclamations.entity.SuiviReclamation;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
 public class SuiviReclamationMapper {
 
+    @Autowired
+    private ModelMapper modelMapper;
+
     public SuiviReclamationResponseDTO toResponseDTO(SuiviReclamation entity) {
         if (entity == null) {
             return null;
         }
-        return SuiviReclamationResponseDTO.builder()
-                .id(entity.getId())
-                .message(entity.getMessage())
-                .action(entity.getAction())
-                .statutAvant(entity.getStatutAvant())
-                .statutApres(entity.getStatutApres())
-                .dateAction(entity.getDateAction())
-                .timeSpentMinutes(entity.getTimeSpentMinutes())
-                .reclamationId(entity.getReclamation() != null ? entity.getReclamation().getId() : null)
-                .agentAuteurId(entity.getAgentAuteur() != null ? entity.getAgentAuteur().getId() : null)
-                .build();
+        return modelMapper.map(entity, SuiviReclamationResponseDTO.class);
     }
 }

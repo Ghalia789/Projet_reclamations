@@ -3,36 +3,27 @@ package com.project.reclamations.mapper;
 import com.project.reclamations.dto.request.ClientRequestDTO;
 import com.project.reclamations.dto.response.ClientResponseDTO;
 import com.project.reclamations.entity.Client;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
 public class ClientMapper {
 
+    @Autowired
+    private ModelMapper modelMapper;
+
     public Client toEntity(ClientRequestDTO dto) {
         if (dto == null) {
             return null;
         }
-        return Client.builder()
-                .nom(dto.getNom())
-                .email(dto.getEmail())
-                .telephone(dto.getTelephone())
-            .typeClient(dto.getTypeClient())
-            .ville(dto.getVille())
-                .build();
+        return modelMapper.map(dto, Client.class);
     }
 
     public ClientResponseDTO toResponseDTO(Client entity) {
         if (entity == null) {
             return null;
         }
-        return ClientResponseDTO.builder()
-                .id(entity.getId())
-                .nom(entity.getNom())
-                .email(entity.getEmail())
-                .telephone(entity.getTelephone())
-                .typeClient(entity.getTypeClient())
-                .ville(entity.getVille())
-                .dateInscription(entity.getDateInscription())
-                .build();
+        return modelMapper.map(entity, ClientResponseDTO.class);
     }
 }

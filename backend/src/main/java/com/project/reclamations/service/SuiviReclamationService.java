@@ -6,17 +6,19 @@ import com.project.reclamations.mapper.SuiviReclamationMapper;
 import com.project.reclamations.repository.SuiviReclamationRepository;
 import java.util.List;
 import java.util.stream.Collectors;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@RequiredArgsConstructor
 @Transactional
 public class SuiviReclamationService {
 
-    private final SuiviReclamationRepository suiviReclamationRepository;
-    private final SuiviReclamationMapper suiviReclamationMapper;
+    @Autowired
+    private SuiviReclamationRepository suiviReclamationRepository;
+
+    @Autowired
+    private SuiviReclamationMapper suiviReclamationMapper;
 
     @Transactional(readOnly = true)
     public List<SuiviReclamationResponseDTO> getAllSuivis() {

@@ -32,29 +32,41 @@ import java.util.Map;
 import java.util.LinkedHashMap;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
-import lombok.RequiredArgsConstructor;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@RequiredArgsConstructor
 @Transactional
 public class ReclamationService {
 
     private static final DateTimeFormatter REPORT_FILE_DATE_FORMAT = DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss");
 
-    private final ReclamationRepository reclamationRepository;
-    private final ClientRepository clientRepository;
-    private final ProduitRepository produitRepository;
-    private final AgentSAVRepository agentSAVRepository;
-    private final SuiviReclamationRepository suiviReclamationRepository;
-    private final ReclamationMapper reclamationMapper;
-    private final SuiviReclamationMapper suiviReclamationMapper;
+    @Autowired
+    private ReclamationRepository reclamationRepository;
+
+    @Autowired
+    private ClientRepository clientRepository;
+
+    @Autowired
+    private ProduitRepository produitRepository;
+
+    @Autowired
+    private AgentSAVRepository agentSAVRepository;
+
+    @Autowired
+    private SuiviReclamationRepository suiviReclamationRepository;
+
+    @Autowired
+    private ReclamationMapper reclamationMapper;
+
+    @Autowired
+    private SuiviReclamationMapper suiviReclamationMapper;
 
     @Transactional(readOnly = true)
     public List<ReclamationResponseDTO> getAllReclamations() {

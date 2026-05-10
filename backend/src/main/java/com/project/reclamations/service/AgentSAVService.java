@@ -8,17 +8,19 @@ import com.project.reclamations.mapper.AgentSAVMapper;
 import com.project.reclamations.repository.AgentSAVRepository;
 import java.util.List;
 import java.util.stream.Collectors;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@RequiredArgsConstructor
 @Transactional
 public class AgentSAVService {
 
-    private final AgentSAVRepository agentSAVRepository;
-    private final AgentSAVMapper agentSAVMapper;
+    @Autowired
+    private AgentSAVRepository agentSAVRepository;
+
+    @Autowired
+    private AgentSAVMapper agentSAVMapper;
 
     @Transactional(readOnly = true)
     public List<AgentSAVResponseDTO> getAllAgents() {

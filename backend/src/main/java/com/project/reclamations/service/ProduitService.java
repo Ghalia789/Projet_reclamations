@@ -8,17 +8,19 @@ import com.project.reclamations.mapper.ProduitMapper;
 import com.project.reclamations.repository.ProduitRepository;
 import java.util.List;
 import java.util.stream.Collectors;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@RequiredArgsConstructor
 @Transactional
 public class ProduitService {
 
-    private final ProduitRepository produitRepository;
-    private final ProduitMapper produitMapper;
+    @Autowired
+    private ProduitRepository produitRepository;
+
+    @Autowired
+    private ProduitMapper produitMapper;
 
     @Transactional(readOnly = true)
     public List<ProduitResponseDTO> getAllProduits() {

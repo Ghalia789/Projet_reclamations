@@ -13,7 +13,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.List;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,11 +25,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/clients")
-@RequiredArgsConstructor
 @Tag(name = "Clients", description = "Gestion des clients")
 public class ClientController {
 
-    private final ClientService clientService;
+    @Autowired
+    private ClientService clientService;
 
     @GetMapping
     @Operation(summary = "Lister tous les clients")

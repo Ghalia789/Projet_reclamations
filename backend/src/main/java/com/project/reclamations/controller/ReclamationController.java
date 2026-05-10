@@ -19,7 +19,7 @@ import jakarta.validation.Valid;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -36,11 +36,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/reclamations")
-@RequiredArgsConstructor
 @Tag(name = "Reclamations", description = "Gestion des reclamations")
 public class ReclamationController {
 
-    private final ReclamationService reclamationService;
+    @Autowired
+    private ReclamationService reclamationService;
 
     @GetMapping
     @Operation(summary = "Lister toutes les reclamations")

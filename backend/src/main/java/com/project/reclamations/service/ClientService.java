@@ -8,17 +8,19 @@ import com.project.reclamations.mapper.ClientMapper;
 import com.project.reclamations.repository.ClientRepository;
 import java.util.List;
 import java.util.stream.Collectors;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@RequiredArgsConstructor
 @Transactional
 public class ClientService {
 
-    private final ClientRepository clientRepository;
-    private final ClientMapper clientMapper;
+    @Autowired
+    private ClientRepository clientRepository;
+
+    @Autowired
+    private ClientMapper clientMapper;
 
     @Transactional(readOnly = true)
     public List<ClientResponseDTO> getAllClients() {
