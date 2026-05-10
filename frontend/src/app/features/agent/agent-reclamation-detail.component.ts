@@ -3,10 +3,10 @@ import { DatePipe, NgFor, NgIf } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { forkJoin } from 'rxjs';
-import { AgentMeService, AgentSuiviCreatePayload } from '../../core/services/agent-me.service';
+import { AgentMeService } from '../../core/services/agent-me.service';
 import { ClientService } from '../../core/services/client.service';
 import { ProduitService } from '../../core/services/produit.service';
-import { Reclamation, ReclamationAction, ReclamationStatut, SuiviReclamation } from '../../core/services/reclamation.service';
+import { Reclamation, ReclamationStatut, SuiviReclamation } from '../../core/services/reclamation.service';
 import { ToastService } from '../../core/services/toast.service';
 
 @Component({
@@ -42,29 +42,35 @@ import { ToastService } from '../../core/services/toast.service';
           <p class="text-sm text-slate-600 md:col-span-2"><span class="font-semibold text-slate-800">Description:</span> {{ reclamation.description }}</p>
         </div>
 
-        <div class="grid gap-4 border-t border-slate-100 pt-4 md:grid-cols-2">
-          <section class="grid gap-2">
-            <h3 class="text-sm font-semibold text-slate-800">Mettre à jour le statut</h3>
-            <select [(ngModel)]="selectedStatut" class="rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none focus:border-brand-600/50 focus:ring-2 focus:ring-brand-600/20">
-              <option *ngFor="let statut of statusOptions" [value]="statut">{{ statut }}</option>
-            </select>
-            <input [(ngModel)]="statusMessage" type="text" placeholder="Message de suivi (optionnel)" class="rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none focus:border-brand-600/50 focus:ring-2 focus:ring-brand-600/20">
-            <input [(ngModel)]="timeSpentMinutes" type="number" min="0" placeholder="Temps passé (minutes, optionnel)" class="rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none focus:border-brand-600/50 focus:ring-2 focus:ring-brand-600/20">
-            <button type="button" [disabled]="isUpdatingStatut" (click)="updateStatut()" class="w-fit rounded-xl bg-slate-800 px-3 py-2 text-sm font-semibold text-white transition hover:bg-slate-900 disabled:cursor-not-allowed disabled:opacity-70">
-              {{ isUpdatingStatut ? '...' : 'Mettre à jour' }}
-            </button>
-          </section>
-
-          <section class="grid gap-2">
-            <h3 class="text-sm font-semibold text-slate-800">Ajouter un suivi</h3>
-            <select [(ngModel)]="selectedAction" class="rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none focus:border-brand-600/50 focus:ring-2 focus:ring-brand-600/20">
-              <option *ngFor="let action of actionOptions" [value]="action">{{ action }}</option>
-            </select>
-            <input [(ngModel)]="suiviMessage" type="text" placeholder="Message de suivi" class="rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none focus:border-brand-600/50 focus:ring-2 focus:ring-brand-600/20">
-            <input [(ngModel)]="suiviTimeSpent" type="number" min="0" placeholder="Temps passé (minutes, optionnel)" class="rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none focus:border-brand-600/50 focus:ring-2 focus:ring-brand-600/20">
-            <button type="button" [disabled]="isAddingSuivi" (click)="addSuivi()" class="w-fit rounded-xl bg-brand-600 px-3 py-2 text-sm font-semibold text-white transition hover:bg-brand-700 disabled:cursor-not-allowed disabled:opacity-70">
-              {{ isAddingSuivi ? '...' : 'Ajouter suivi' }}
-            </button>
+        <div class="grid gap-4 border-t border-slate-100 pt-4">
+          <section class="grid gap-3 rounded-2xl border border-emerald-200 bg-gradient-to-br from-emerald-50 via-white to-sky-50 p-4">
+            <div class="flex items-center justify-between">
+              <h3 class="text-sm font-semibold text-emerald-900">Action sur la réclamation</h3>
+              <button type="button" (click)="toggleUpdateForm()" class="rounded-lg border border-emerald-200 px-3 py-1 text-xs font-semibold text-emerald-800 transition hover:bg-emerald-50">
+                {{ showUpdateForm ? 'Masquer' : 'Afficher' }}
+              </button>
+            </div>
+            <div *ngIf="showUpdateForm" class="grid gap-2 md:grid-cols-2">
+              <label class="grid gap-2 text-sm font-semibold text-slate-700">
+                Statut
+                <select [(ngModel)]="selectedStatut" class="rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none focus:border-emerald-400/60 focus:ring-2 focus:ring-emerald-200">
+                  <option *ngFor="let statut of statusOptions" [value]="statut">{{ statut }}</option>
+                </select>
+              </label>
+              <label class="grid gap-2 text-sm font-semibold text-slate-700">
+                Temps passé (minutes)
+                <input [(ngModel)]="timeSpentMinutes" type="number" min="0" placeholder="Ex: 30" class="rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none focus:border-emerald-400/60 focus:ring-2 focus:ring-emerald-200">
+              </label>
+              <label class="grid gap-2 text-sm font-semibold text-slate-700 md:col-span-2">
+                Message de suivi
+                <input [(ngModel)]="statusMessage" type="text" placeholder="Message de suivi (optionnel)" class="rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none focus:border-emerald-400/60 focus:ring-2 focus:ring-emerald-200">
+              </label>
+              <div class="md:col-span-2">
+                <button type="button" [disabled]="isUpdatingStatut" (click)="updateStatut()" class="w-fit rounded-xl bg-emerald-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-70">
+                  {{ isUpdatingStatut ? '...' : 'Mettre à jour' }}
+                </button>
+              </div>
+            </div>
           </section>
         </div>
       </article>
@@ -93,19 +99,14 @@ export class AgentReclamationDetailComponent implements OnInit {
 
   isLoading = true;
   isUpdatingStatut = false;
-  isAddingSuivi = false;
   errorMessage = '';
+  showUpdateForm = false;
 
   selectedStatut: ReclamationStatut = 'OUVERTE';
   statusMessage = '';
   timeSpentMinutes = '';
 
-  selectedAction: ReclamationAction = 'UPDATED';
-  suiviMessage = '';
-  suiviTimeSpent = '';
-
   readonly statusOptions: ReclamationStatut[] = ['OUVERTE', 'EN_COURS', 'RESOLUE', 'FERMEE'];
-  readonly actionOptions: ReclamationAction[] = ['UPDATED', 'RESOLVED', 'CLOSED'];
 
   private reclamationId: number | null = null;
   private readonly clientNameMap = new Map<number, string>();
@@ -131,6 +132,11 @@ export class AgentReclamationDetailComponent implements OnInit {
     this.reclamationId = id;
     this.loadDetail(id);
   }
+
+  toggleUpdateForm(): void {
+    this.showUpdateForm = !this.showUpdateForm;
+  }
+
 
   updateStatut(): void {
     if (!this.reclamationId || this.isUpdatingStatut) {
@@ -158,38 +164,6 @@ export class AgentReclamationDetailComponent implements OnInit {
         this.isUpdatingStatut = false;
         this.errorMessage = 'Impossible de mettre à jour le statut.';
         this.toastService.actionError('mettre a jour le statut');
-      }
-    });
-  }
-
-  addSuivi(): void {
-    if (!this.reclamationId || this.isAddingSuivi || !this.suiviMessage.trim()) {
-      return;
-    }
-
-    this.isAddingSuivi = true;
-    const loadingToastId = this.toastService.loading('Traitement', 'Ajout du suivi en cours...');
-
-    const payload: AgentSuiviCreatePayload = {
-      message: this.suiviMessage.trim(),
-      action: this.selectedAction,
-      ...(this.suiviTimeSpent.trim() ? { timeSpentMinutes: Number(this.suiviTimeSpent) } : {})
-    };
-
-    this.agentMeService.addSuivi(this.reclamationId, payload).subscribe({
-      next: () => {
-        this.toastService.dismiss(loadingToastId);
-        this.isAddingSuivi = false;
-        this.suiviMessage = '';
-        this.suiviTimeSpent = '';
-        this.toastService.created('Suivi');
-        this.loadDetail(this.reclamationId as number);
-      },
-      error: () => {
-        this.toastService.dismiss(loadingToastId);
-        this.isAddingSuivi = false;
-        this.errorMessage = 'Impossible d\'ajouter le suivi.';
-        this.toastService.actionError('ajouter le suivi');
       }
     });
   }
