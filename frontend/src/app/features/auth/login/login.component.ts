@@ -18,8 +18,8 @@ import { AuthService } from '../../../core/services/auth.service';
 
       <form [formGroup]="form" (ngSubmit)="submit()" class="form">
         <label>
-          Nom d'utilisateur
-          <input type="text" formControlName="username" placeholder="admin">
+          Email
+          <input type="email" formControlName="email" placeholder="admin@company.tn">
         </label>
 
         <label>
@@ -117,7 +117,7 @@ export class LoginComponent {
   errorMessage = '';
 
   form = this.formBuilder.nonNullable.group({
-    username: ['admin', [Validators.required]],
+    email: ['admin@company.tn', [Validators.required, Validators.email]],
     password: ['admin123', [Validators.required]]
   });
 

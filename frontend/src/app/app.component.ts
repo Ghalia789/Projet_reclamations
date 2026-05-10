@@ -32,7 +32,7 @@ interface NavItem {
         <div class="flex flex-wrap items-center justify-between gap-4">
           <div>
             <p class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Système de Gestion des Réclamations</p>
-            <h1 class="mt-0.5 text-xl font-bold text-slate-900">Reclamations Admin</h1>
+            <h1 class="mt-0.5 text-xl font-bold text-slate-900">{{ appTitle }}</h1>
           </div>
 
           <nav class="flex w-full flex-wrap items-center gap-2 md:w-auto md:gap-1" aria-label="Main navigation">
@@ -66,16 +66,42 @@ interface NavItem {
   `
 })
 export class AppComponent {
-  readonly navItems: NavItem[] = [
+  readonly adminNavItems: NavItem[] = [
     { to: '/dashboard', label: 'Dashboard', icon: 'layout-dashboard' },
     { to: '/clients', label: 'Clients', icon: 'users' },
     { to: '/produits', label: 'Produits', icon: 'package' },
     { to: '/agents', label: 'Agents', icon: 'headphones' },
     { to: '/reclamations', label: 'Réclamations', icon: 'file-warning' },
-    { to: '/reclamations/report', label: 'Rapports', icon: 'bar-chart-3' }
+    { to: '/reclamations/report', label: 'Rapports', icon: 'bar-chart-3' },
+    { to: '/admin/accounts', label: 'Comptes', icon: 'shield' }
+  ];
+
+  readonly agentNavItems: NavItem[] = [
+    { to: '/agent/dashboard', label: 'Mon dashboard', icon: 'layout-dashboard' },
+    { to: '/agent/reclamations', label: 'Mes réclamations', icon: 'file-warning' }
   ];
 
   constructor(public authService: AuthService, private readonly router: Router) {}
+
+  get appTitle(): string {
+    if (this.authService.isAgent()) {
+      return 'Reclamations Agent';
+    }
+    return 'Reclamations Admin';
+  }
+
+  get navItems(): NavItem[] {
+    if (!this.authService.isAuthenticated()) {
+      return [];
+    }
+    if (this.authService.isAgent()) {
+      return this.agentNavItems;
+    }
+    if (this.authService.isAdmin()) {
+      return this.adminNavItems;
+    }
+    return this.adminNavItems;
+  }
 
   isNavItemActive(path: string): boolean {
     const current = this.router.url;
