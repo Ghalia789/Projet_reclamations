@@ -3,7 +3,6 @@ package com.project.reclamations.config;
 import com.project.reclamations.security.JwtAuthenticationFilter;
 import java.util.Arrays;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -25,12 +24,6 @@ public class SecurityConfig {
     @Autowired
     private JwtAuthenticationFilter jwtAuthenticationFilter;
 
-    @Value("${app.security.username}")
-    private String demoUsername;
-
-    @Value("${app.security.password}")
-    private String demoPassword;
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
@@ -50,6 +43,10 @@ public class SecurityConfig {
                 .requestMatchers("/api/auth/**").permitAll()
                 // Allow health checks
                 .requestMatchers("/actuator/**").permitAll()
+                // Admin-only endpoints
+                .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                // Agent endpoints (also allow admin for support)
+                .requestMatchers("/api/agents/**").hasAnyRole("AGENT", "ADMIN")
                 // Protect all business endpoints
                 .requestMatchers("/api/**").authenticated()
                 // All other requests require authentication

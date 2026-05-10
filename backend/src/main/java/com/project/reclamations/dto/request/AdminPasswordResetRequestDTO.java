@@ -10,11 +10,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class LoginRequestDTO {
+public class AdminPasswordResetRequestDTO {
 
-    @NotBlank(message = "L'email est obligatoire")
-    private String email;
-
-    @NotBlank(message = "Le mot de passe est obligatoire")
-    private String password;
+    @NotBlank(message = "Le nouveau mot de passe est obligatoire")
+    private String newPassword;
 }
