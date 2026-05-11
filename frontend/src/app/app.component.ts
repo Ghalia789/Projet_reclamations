@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { NgFor, NgIf } from '@angular/common';
+import { NgClass, NgFor, NgIf } from '@angular/common';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { AuthService } from './core/services/auth.service';
 import { ToastContainerComponent } from './shared/ui/toast-container.component';
@@ -22,13 +22,14 @@ interface NavItem {
     RouterLinkActive,
     NgFor,
     NgIf,
+    NgClass,
     ToastContainerComponent,
     LucideAngularModule
   ],
   template: `
     <app-toast-container></app-toast-container>
     <div class="min-h-screen p-4 md:p-6">
-      <header class="mb-6 rounded-2xl border border-brand-600/15 bg-white/90 px-6 py-4 shadow-soft backdrop-blur">
+      <header *ngIf="!isLoginPage" class="mb-6 rounded-2xl border border-brand-600/15 bg-white/90 px-6 py-4 shadow-soft backdrop-blur">
         <div class="flex flex-wrap items-center justify-between gap-4">
           <div>
             <p class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Système de Gestion des Réclamations</p>
@@ -59,7 +60,20 @@ interface NavItem {
         </div>
       </header>
 
-      <main class="min-h-[70vh] rounded-2xl border border-slate-200 bg-white/80 p-6 shadow-soft md:p-8">
+      <header *ngIf="isLoginPage" class="mb-6 rounded-2xl border border-brand-600/15 bg-white/90 px-6 py-4 shadow-soft backdrop-blur">
+        <div class="flex flex-wrap items-center justify-between gap-4">
+          <div>
+            <p class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Système de Gestion des Réclamations</p>
+            <h1 class="mt-0.5 text-xl font-bold text-slate-900">Reclamations</h1>
+          </div>
+        </div>
+      </header>
+
+      <main
+        [ngClass]="isLoginPage
+          ? 'min-h-[70vh] rounded-2xl border border-slate-200 bg-white/80 p-6 shadow-soft md:p-8 flex items-center justify-center'
+          : 'min-h-[70vh] rounded-2xl border border-slate-200 bg-white/80 p-6 shadow-soft md:p-8'"
+      >
         <router-outlet></router-outlet>
       </main>
     </div>
@@ -82,6 +96,10 @@ export class AppComponent {
   ];
 
   constructor(public authService: AuthService, private readonly router: Router) {}
+
+  get isLoginPage(): boolean {
+    return this.router.url.startsWith('/login');
+  }
 
   get appTitle(): string {
     if (this.authService.isAgent()) {

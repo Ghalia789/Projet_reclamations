@@ -3,40 +3,44 @@
 
 ---
 
-## 📋 Quick Start
+## Quick Start
 
 ```bash
-# Clone and navigate
-cd Projet_reclamations
+# Backend
+cd backend
+mvn spring-boot:run
 
-# Start everything with Docker
-docker-compose up
-
-# Access the application
-Backend API:    http://localhost:8080
-Swagger UI:     http://localhost:8080/swagger-ui.html
-Frontend:       http://localhost:4200 (if running separately)
-MySQL:          localhost:3306
+# Frontend (new terminal)
+cd frontend
+npm install
+ng serve
 ```
+
+Access:
+
+- Backend API: http://localhost:8087
+- Swagger UI: http://localhost:8087/swagger-ui.html
+- Frontend: http://localhost:4200
+- MySQL: localhost:3306
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 | Layer | Technology |
 |-------|-----------|
-| **Backend** | Spring Boot 4 (Java 21) |
-| **Frontend** | Angular (latest) |
+| **Backend** | Spring Boot 3.2.4 (Java 17) |
+| **Frontend** | Angular (standalone) + Tailwind CSS |
 | **Database** | MySQL 8 |
 | **ORM** | Spring Data JPA / Hibernate |
 | **Security** | Spring Security + JWT |
 | **API Docs** | Swagger / OpenAPI (springdoc) |
 | **Build** | Maven (backend), npm (frontend) |
-| **Container** | Docker + docker-compose |
+| **Icons** | lucide-angular |
 
 ---
 
-## 📂 Project Structure
+## Project Structure
 
 ```
 Projet_reclamations/
@@ -53,22 +57,18 @@ Projet_reclamations/
 │   ├── Dockerfile                 Nginx reverse proxy
 │   └── README.md
 │
-├── docker-compose.yml             Orchestrate backend, frontend, MySQL
 ├── PROJECT_PLAN.md                Detailed implementation roadmap
 └── README.md                       This file
 ```
 
 ---
 
-## 🎯 Project Phases
+## Project Overview
 
-### **Phase 1: Backend Development** ⚙️
-- Configure Spring Boot 4 with Maven
-- Design & implement 5 JPA entities
-- Build REST API with 12 endpoints
-- Implement Spring Validator on all inputs
-- Create global exception handling
-- Generate Swagger documentation
+- Backend REST API with DTOs, validators, mappers, and Swagger docs.
+- Frontend Angular SPA with standalone components and Tailwind styling.
+- JWT authentication with role-based access (ADMIN, AGENT).
+- Admin account management and agent self-service endpoints.
 
 **Entities:**
 - `Client` - customers
@@ -77,40 +77,13 @@ Projet_reclamations/
 - `Reclamation` - complaints (core entity)
 - `SuiviReclamation` - audit trail / history
 
-### **Phase 2: Frontend Development** 🎨
-- Set up Angular project
-- Create 7 main pages (list, detail, form, agents, products, reports, dashboard)
-- Implement JWT-based authentication
-- Build responsive UI with reusable components
-- Add form validation & error handling
-- Create interceptors for API calls
-
-### **Phase 3: Docker & Deployment** 🐳
-- Multi-stage Dockerfile for Spring Boot
-- Nginx container for Angular frontend
-- `docker-compose.yml` with MySQL, backend, frontend services
-- Volume mounts for persistent database
-
-### **Phase 4: Documentation & Testing** 📚
-- Auto-generated Swagger API docs
-- Unit & integration tests
-- API documentation
-- Git commit history with clean messages
-
-### **Phase 5: Cloud Deployment (BONUS)** ☁️
-- Deploy to Google Cloud Platform (GCP)
-- Cloud SQL for MySQL
-- Cloud Run for Spring Boot
-- Cloud Storage for Angular frontend
-
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
-- Java 21
+- Java 17
 - Node.js 18+ (for Angular)
-- Docker & Docker Compose
 - Maven 3.9+
 - Git
 
@@ -121,7 +94,7 @@ Projet_reclamations/
 cd backend
 mvn clean install
 mvn spring-boot:run
-# Runs on http://localhost:8080
+# Runs on http://localhost:8087
 ```
 
 **2. Frontend (Angular)**
@@ -139,17 +112,9 @@ mysql -u root -p
 CREATE DATABASE reclamations_db;
 ```
 
-### Docker Production Setup
-```bash
-# Build and run all services
-docker-compose up --build
-
-# View logs
-docker-compose logs -f
-
-# Stop services
-docker-compose down
-```
+### Notes
+- Backend runs on port 8087 (see backend/src/main/resources/application.properties).
+- Frontend uses environment.ts apiBaseUrl = http://localhost:8087.
 
 ---
 
@@ -169,7 +134,37 @@ AgentSAV (1) ─────── (N) Reclamation
 
 ---
 
-## 📝 Core Endpoints
+## Authentication and Roles
+
+- Login payload uses email/password.
+- JWT claims include role and optional agentId.
+- Roles: ADMIN and AGENT (front-end uses role guards).
+
+Login example:
+
+```http
+POST /api/auth/login
+Content-Type: application/json
+
+{
+      "email": "admin@company.tn",
+      "password": "admin123"
+}
+```
+
+Response:
+
+```json
+{
+      "token": "<jwt>",
+      "tokenType": "Bearer",
+      "username": "admin@company.tn",
+      "role": "ADMIN",
+      "agentId": null
+}
+```
+
+## Core Endpoints
 
 ### **Clients**
 ```
@@ -188,6 +183,25 @@ POST   /api/reclamations/{id}/suivi     - Add follow-up entry
 GET    /api/reclamations/rapport        - Satisfaction report
 ```
 
+### **Agent Self-Service**
+```
+GET  /api/agents/me                      - Get current agent profile
+GET  /api/agents/me/reclamations         - My reclamations
+GET  /api/agents/me/reclamations/{id}    - My reclamation detail
+GET  /api/agents/me/reclamations/{id}/suivi
+POST /api/agents/me/reclamations/{id}/suivi
+PUT  /api/agents/me/reclamations/{id}/statut
+```
+
+### **Admin Account Management**
+```
+GET  /api/admin/agents/accounts
+GET  /api/admin/agents/accounts/{id}
+POST /api/admin/agents/accounts
+PUT  /api/admin/agents/accounts/{id}
+PUT  /api/admin/agents/accounts/{id}/reset-password
+```
+
 ### **Agents & Products**
 ```
 GET  /api/agents               - List all SAV agents
@@ -201,7 +215,7 @@ GET  /api/produits             - List all products
 | Criterion | Points | Status |
 |-----------|--------|--------|
 | **Git Quality** | Clean commits, meaningful messages, regular frequency | ☐ |
-| **Operationality** | App runs correctly after `docker-compose up` | ☐ |
+| **Operationality** | App runs correctly after local run | ☐ |
 | **Architecture** | Strict REST API + Angular SPA separation | ☐ |
 | **Validation** | Spring Validator on ALL API inputs (REQUIRED) | ☐ |
 | **API Documentation** | Swagger/OpenAPI complete and accessible | ☐ |
@@ -209,7 +223,7 @@ GET  /api/produits             - List all products
 
 ---
 
-## 🔐 Key Features
+## Key Features
 
 ✅ **Full CRUD Operations** - Create, read, update complaints  
 ✅ **Complaint Assignment** - Assign SAV agents to complaints  
@@ -221,7 +235,9 @@ GET  /api/produits             - List all products
 ✅ **Error Handling** - Global exception handler with structured responses  
 ✅ **API Documentation** - Interactive Swagger UI  
 ✅ **Authentication** - JWT-based security with Guards  
-✅ **Docker Ready** - Single command deployment  
+✅ **Role-Based Access** - Admin and Agent spaces with dedicated routes  
+✅ **Agent Self-Service** - Agents manage assigned reclamations and suivi  
+✅ **Account Management** - Admin creates and resets agent accounts  
 
 ---
 
@@ -230,7 +246,7 @@ GET  /api/produits             - List all products
 - **[PROJECT_PLAN.md](PROJECT_PLAN.md)** - Detailed phase-by-phase roadmap
 - **[backend/README.md](backend/README.md)** - Backend setup & API docs
 - **[frontend/README.md](frontend/README.md)** - Frontend setup & architecture
-- **Swagger UI** - Access at `http://localhost:8080/swagger-ui.html`
+- **Swagger UI** - Access at `http://localhost:8087/swagger-ui.html`
 
 ---
 
@@ -239,7 +255,6 @@ GET  /api/produits             - List all products
 - [Spring Boot Documentation](https://spring.io/projects/spring-boot)
 - [Spring Data JPA Guide](https://spring.io/projects/spring-data-jpa)
 - [Angular Documentation](https://angular.io/docs)
-- [Docker Documentation](https://docs.docker.com)
 - [Swagger/OpenAPI Guide](https://swagger.io)
 
 ---
@@ -268,7 +283,7 @@ GET  /api/produits             - List all products
 ---
 
 **Project Created:** April 11, 2026  
-**Status:** Ready for implementation  
+**Status:** In progress  
 **Contribution:** Follow clean Git practices and keep commits meaningful!
 
 ---

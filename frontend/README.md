@@ -1,17 +1,19 @@
-# Frontend - Architecture and Setup Plan
+# Frontend - Angular SPA
 
 Angular frontend for the reclamations platform.
 
-## Target Stack
+## Stack
 
-- Angular (latest stable)
+- Angular (standalone components)
 - TypeScript
 - RxJS
 - Angular Router
-- Reactive Forms
+- Reactive Forms + Template-driven forms
 - HTTP interceptor for JWT
+- Tailwind CSS
+- lucide-angular icons
 
-## Proposed Frontend Architecture
+## Project Structure (current)
 
 ```text
 frontend/
@@ -61,9 +63,14 @@ frontend/
 └── package.json
 ```
 
-## Routing Plan
+## Routes
+
+Public:
 
 - /login
+
+Admin:
+
 - /dashboard
 - /clients
 - /produits
@@ -72,45 +79,36 @@ frontend/
 - /reclamations/new
 - /reclamations/:id
 - /reclamations/report
+- /admin/accounts
 
-Protected by auth guard:
+Agent:
 
-- /dashboard and all business routes
+- /agent/dashboard
+- /agent/reclamations
+- /agent/reclamations/:id
 
-Public:
-
-- /login
-
-## API Integration Plan
+## API Integration
 
 Backend base URL:
 
 - http://localhost:8087
 
-Endpoints to consume first:
-
-- POST /api/auth/login
-- GET /api/clients
-- POST /api/clients
-- GET /api/reclamations
-- POST /api/reclamations
-
 JWT strategy:
 
-- Store token in localStorage (initial version)
+- Store token, role, agentId, email in localStorage
 - Attach Authorization: Bearer <token> in auth.interceptor.ts
 - Redirect to /login on 401
+- Role guard protects admin and agent routes
 
-## Setup Commands (When Starting Implementation)
+## Local Setup
 
 From project root:
 
 ```bash
 npm install -g @angular/cli
-ng new frontend --routing --style=css
 cd frontend
 npm install
-ng serve -o
+ng serve
 ```
 
 ## Environment Configuration
@@ -131,11 +129,10 @@ export const environment = {
 - Use consistent loading and error states on every API-driven page
 - Keep list/detail/create flows separated per feature module
 
-## Next Frontend Milestones
+## Current Features
 
-1. Scaffold Angular app
-2. Create core services (auth, token, interceptor, guard)
-3. Implement login screen and JWT flow
-4. Implement reclamation list/create/detail pages
-5. Add clients/produits/agents management pages
-6. Implement report dashboard
+- JWT login (email/password)
+- Admin dashboard and management pages
+- Agent dashboard and assigned reclamations
+- Role-based navigation and guards
+- Toast notifications and status/priorite pills

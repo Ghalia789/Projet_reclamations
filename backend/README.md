@@ -1,13 +1,13 @@
 # Backend - Spring Boot REST API
 
-Backend API for the Système de Gestion des Réclamations.
+Backend API for the Systeme de Gestion des Reclamations.
 
 ## Current Runtime
 
 - Java: 17
 - Spring Boot: 3.2.4
 - API Port: 8087
-- Database: MySQL (WAMP), schema reclamations_db
+- Database: MySQL, schema reclamations_db
 - API docs: /swagger-ui.html
 
 ## Quick Start
@@ -58,13 +58,6 @@ Public routes:
 - /swagger-ui/**
 - /v3/api-docs/**
 
-### Demo login credentials
-
-Configured in src/main/resources/application.properties:
-
-- app.security.username=admin
-- app.security.password=admin123
-
 ### Login example
 
 Request:
@@ -74,7 +67,7 @@ POST /api/auth/login
 Content-Type: application/json
 
 {
-    "username": "admin",
+    "email": "admin@company.tn",
     "password": "admin123"
 }
 ```
@@ -85,7 +78,9 @@ Response:
 {
     "token": "<jwt>",
     "tokenType": "Bearer",
-    "username": "admin"
+    "username": "admin@company.tn",
+    "role": "ADMIN",
+    "agentId": null
 }
 ```
 
@@ -128,6 +123,23 @@ Reclamations:
 - POST /api/reclamations/{id}/suivi
 - GET /api/reclamations/rapport
 
+Agent self-service:
+
+- GET /api/agents/me
+- GET /api/agents/me/reclamations
+- GET /api/agents/me/reclamations/{id}
+- GET /api/agents/me/reclamations/{id}/suivi
+- POST /api/agents/me/reclamations/{id}/suivi
+- PUT /api/agents/me/reclamations/{id}/statut
+
+Admin account management:
+
+- GET /api/admin/agents/accounts
+- GET /api/admin/agents/accounts/{id}
+- POST /api/admin/agents/accounts
+- PUT /api/admin/agents/accounts/{id}
+- PUT /api/admin/agents/accounts/{id}/reset-password
+
 ## Package Structure
 
 ```text
@@ -154,6 +166,5 @@ src/main/java/com/project/reclamations/
 
 ## Next Backend Items
 
-- Finalize production-grade auth model (replace demo in-memory user)
 - Add unit and integration tests
-- Add Docker artifacts for backend runtime
+- Review production secrets and password policy
